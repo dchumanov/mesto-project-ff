@@ -4,8 +4,10 @@ function createCard (cardData, removeCard) {
   const deleteButton = cardElement.querySelector('.card__delete-button');
 
   cardElement.querySelector('.card__image').src = cardData.link;
+  cardElement.querySelector('.card__image').alt = 'Фото ' + cardData.name;
   cardElement.querySelector('.card__title').textContent = cardData.name;
-  deleteButton.addEventListener('click', () => {removeCard(cardElement)});
+  
+  deleteButton.addEventListener('click', () => removeCard(cardElement));
 
   return cardElement;
 }

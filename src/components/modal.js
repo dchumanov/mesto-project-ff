@@ -12,7 +12,7 @@ export function closeModal (modal) {
 
 export function closeModalByOverlay (event) {
   if (event.target === event.currentTarget) {
-    closeModal(document.querySelector('.popup_is-opened'));
+    closeModal(event.currentTarget);
   }
 }
 

@@ -1,7 +1,12 @@
+import { removeLike, addLike } from './api';
+
 const cardTemplate = document.querySelector('#card-template').content;
+function getCardTemplate () {
+  return cardTemplate.querySelector('.card').cloneNode(true);
+}
 
 export function createCard (cardData, profileID, removeCard, likeCard, openPopupImage) {
-  const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
+  const cardElement = getCardTemplate();
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
@@ -31,47 +36,27 @@ export function createCard (cardData, profileID, removeCard, likeCard, openPopup
   return cardElement;
 }
 
-
-
-const token = '324ed79f-3eee-48a7-8bf6-ac713c870c09';
-const groupID = 'wff-cohort-16';
-
-export function removeCard (cardElement, cardId) {
-  cardElement.remove();
-  fetch(`https://nomoreparties.co/v1/${groupID}/cards/${cardId}`, {
-    method: 'DELETE',
-    headers: {
-      authorization: token
-    },
-  })
-}
-
 export function likeCard(likeButton, likeCounter, cardId) {
 
   if (likeButton.classList.contains('card__like-button_is-active')) {
     likeButton.classList.remove('card__like-button_is-active')
-    fetch(`https://nomoreparties.co/v1/${groupID}/cards/likes/${cardId}`, {
-      method: 'DELETE',
-      headers: {
-        authorization: token
-      }
-    })
-    .then(response => response.json())
-    .then(response => {
-      likeCounter.textContent = response.likes.length;
-    })
-  }
-  else {
-    likeButton.classList.add('card__like-button_is-active');
-    fetch(`https://nomoreparties.co/v1/${groupID}/cards/likes/${cardId}`, {
-      method: 'PUT',
-      headers: {
-        authorization: token
-      }
-    })
-      .then(response => response.json())
+    removeLike(cardId)
       .then(response => {
         likeCounter.textContent = response.likes.length;
       })
+      .catch((err) => {
+        console.log(`Ошибка: ${err}`)
+      });
+  }
+  
+  else {
+    likeButton.classList.add('card__like-button_is-active');
+    addLike(cardId)
+      .then(response => {
+        likeCounter.textContent = response.likes.length;
+      })
+      .catch((err) => {
+        console.log(`Ошибка: ${err}`)
+      });
   }
 }

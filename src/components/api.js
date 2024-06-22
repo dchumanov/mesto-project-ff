@@ -9,18 +9,20 @@ const config = {
   }
 }
 
+function checkStatus (response) {
+  if (response.ok) {
+    return response.json();
+  }
+  return Promise.reject(response.status);
+}
+
 export const getProfile = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: {
       authorization: config.headers.authorization
     }
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(res.status)
-    });
+    .then(response => checkStatus(response));
 } 
 
 export const getCards = () => {
@@ -29,12 +31,7 @@ export const getCards = () => {
       authorization: config.headers.authorization
     }
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(res.status)
-    });
+    .then(response => checkStatus(response));
 }
 
 export const editProfile = (profile) => {
@@ -46,12 +43,7 @@ export const editProfile = (profile) => {
       about: profile.about
     })
   })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      return Promise.reject(response.status)
-    })
+    .then(response => checkStatus(response))
 }
 
 export const postCard = (card) => {
@@ -63,12 +55,7 @@ export const postCard = (card) => {
       link: card.link
     })
   })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      return Promise.reject(response.status)
-    })
+    .then(response => checkStatus(response))
 }
 
 export const changeAvatar = (link) => {
@@ -79,10 +66,44 @@ export const changeAvatar = (link) => {
       avatar: link
     })
   })
+    .then(response => checkStatus(response))
+}
+
+export function removeCard (cardElement, cardId) {
+  cardElement.remove();
+  fetch(`${config.baseUrl}/cards/${cardId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: config.headers.authorization
+    }
+  })
     .then(response => {
       if (response.ok) {
         return
       }
-      return Promise.reject(response.status)
+      return Promise.reject(response.status);
     })
+    .catch((err) => {
+      console.log(`Ошибка: ${err}`)
+    });
+}
+
+export function removeLike (cardId) {
+  return  fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: config.headers.authorization
+    }
+  })
+    .then(response => checkStatus(response))
+}
+
+export function addLike (cardId) {
+  return  fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: 'PUT',
+    headers: {
+      authorization: config.headers.authorization
+    }
+  })
+    .then(response => checkStatus(response))
 }
